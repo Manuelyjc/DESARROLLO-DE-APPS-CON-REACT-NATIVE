@@ -1,7 +1,7 @@
 import React, { useState} from 'react';
 import useViewModel from './viewModel';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, StyleSheet, Image, TextInput, ToastAndroid, Touchable, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ScrollView} from 'react-native';
 import { RoundedButton } from '../../components/RoundedButton';
 import { CustomTextInput } from '../../components/CustomTextInput';
 import { StackNavigationProp } from '@react-navigation/stack';
