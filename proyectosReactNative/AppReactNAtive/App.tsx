@@ -19,10 +19,12 @@ const App = () => {
           headerShown: false
         }}
       >
+        {/*
         <Stack.Screen
           name="HomeScreen"
           component={HomeScreen}
         />
+        */}
         
         <Stack.Screen
           name="RegisterScreen"

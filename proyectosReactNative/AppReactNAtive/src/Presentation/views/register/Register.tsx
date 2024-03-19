@@ -28,7 +28,8 @@ export const RegisterScreen = () => {
     <Text style={styles.logoText}>SELECCIONA UNA IMAGEN</Text>
         </View>
             <View style={styles.form}>
-            <Text style={styles.formText}>REGISTRARSE</Text>
+             <ScrollView>
+               <Text style={styles.formText}>REGISTRARSE</Text>
 
         <CustomTextInput
             image={require('../../../../assets/user.png')}
@@ -84,6 +85,7 @@ export const RegisterScreen = () => {
  <View style={{ marginTop: 30 }}>
         <RoundedButton text='CONFIRMAR' onPress={() => register()} />
  </View>
+ </ScrollView>
  </View>
  </View>
  );
