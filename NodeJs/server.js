@@ -1,4 +1,8 @@
 const express = require('express');
+const session = require('express-session'); // En la configuración de express-session, el campo secret se utiliza para firmar la cookie de sesión y protegerla contra manipulaciones. Debes proporcionar una cadena única y segura como valor para este campo.
+const passport = require('passport');
+const multer = require('multer'); //Agregado para FireBase
+
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
@@ -6,36 +10,67 @@ const logger = require('morgan');
 const cors = require('cors');
 
 /**
-* Importar rutas
-*/
+ * Importar rutas
+ */
 const usersRoutes = require('./routes/userRoutes');
 
-
 const port = process.env.PORT || 3000;
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+app.use(logger('dev'));  // log requests to the console DEBUG
+app.use(express.json()); // support json encoded bodies
+app.use(express.urlencoded({ 
+    extended: true 
+})); // support encoded bodies
 app.use(cors());
-app.disable('x-powered-by');
+
+// Configura express-session
+app.use(session({
+    secret: '3e1acd58068f2ba18699adc43e83808f5cb035aeca98386ec20cf1f304aba6b6',
+    resave: false,
+    saveUninitialized: false
+  }));
+
+// Configura Passport después de express-session
+app.use(passport.initialize());
+app.use(passport.session());
+
+require('./config/passport')(passport);
+
+app.disable('x-powered-by'); // disable the X-Powered-By header in responses
+
 app.set('port', port);
 
+//Agregado para FireBase
+const upload = multer({
+    storage: multer.memoryStorage()
+});
+
 /**
-* LLamando las rutas
+ * Llamar a las rutas
+ */
+usersRoutes(app, upload);
+
+
+/* Iniciar el servidor
 */
-usersRoutes(app);
-
-
-//direccion ip V4 de la maquina, consultar con ipconfig
-server.listen(3000, '192.168.128.10' || 'localhost', function() {
- console.log('Aplicación de NodeJS ' + process.pid + ' inicio en el puerto ' + port);
+server.listen(port, '172.28.144.1' || 'localhost', function() {
+    console.log('App Node.js ' + process.pid + ' ejecutando en ' + server.address().address + ':' + server.address().port);
 });
 
+/** RUTAS ***********************************************/
 app.get('/', (req, res) => {
- res.send('Ruta raiz del Backend');
+    res.send('Estas en la ruta raiz del backend.');
 });
 
-//Error handler 
+app.get('/test', (req, res) => {
+    res.send('Estas en la ruta TEST');
+});
+
+//Manejo de errores ******************************************
 app.use((err, req, res, next) => {
-    console.log(err);
+    console.error(err);
     res.status(err.status || 500).send(err.stack);
-   }); 
+});
+
+
+//en package.json se cambio "passport": "^0.7.0", a "passport": "^0.4.1",

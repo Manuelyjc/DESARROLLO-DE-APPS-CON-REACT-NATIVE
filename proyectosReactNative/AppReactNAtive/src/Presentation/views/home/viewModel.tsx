@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 const HomeViewModel = () => {
+
     const [values, setValues] = useState({
         email: '',
         password: '',
@@ -8,12 +9,12 @@ const HomeViewModel = () => {
 
     const onChange = (property: string, value: any) => {
         setValues({ ...values, [property]: value });
-    };
+    }
 
     return {
         ...values,
-        onChange,
-    };
-};
+        onChange
+    }
+}
 
 export default HomeViewModel;
