@@ -18,7 +18,7 @@ const App = () => {
         headerShown: false
       }}>
 
-      <Stack.Screen
+        <Stack.Screen
           name="HomeScreen"
           component={HomeScreen}
         />
