@@ -53,7 +53,7 @@ usersRoutes(app, upload);
 
 /* Iniciar el servidor
 */
-server.listen(port, '192.168.128.11' || 'localhost', function() {
+server.listen(port, '192.168.128.3' || 'localhost', function() {
     console.log('App Node.js ' + process.pid + ' ejecutando en ' + server.address().address + ':' + server.address().port);
 });
 

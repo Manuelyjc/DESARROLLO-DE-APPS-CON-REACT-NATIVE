@@ -3,7 +3,6 @@ const Rol = require('../models/rol');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
-//const storage = require('../utils/cloud_storage'); //Agregado para FireBase
 
 module.exports = {
     login(req, res) {
@@ -19,7 +18,7 @@ module.exports = {
                 });
             }
 
-            if (!myUser) { //Cliente sin autorización para realizar  la petición
+            if (!myUser) { 
                 return res.status(401).json({
                     success: false,
                     message: 'El email no existe en la base de datos'
@@ -30,6 +29,13 @@ module.exports = {
             if (isPasswordValid) {
                 const token = jwt.sign({ id: myUser.id, email: myUser.email }, keys.secretOrKey, {});
 
+                let roles = [];
+                try {
+                    roles = myUser.roles ? JSON.parse(myUser.roles) : [];
+                } catch (error) {
+                    console.error('Error al analizar roles:', error);
+                }
+
                 const data = {
                     id: myUser.id,
                     email: myUser.email,
@@ -38,7 +44,7 @@ module.exports = {
                     image: myUser.image,
                     phone: myUser.phone,
                     session_token: `JWT ${token}`,
-                    roles: JSON.parse(myUser.roles)
+                    roles: roles
                 }
                 return res.status(201).json({
                     success: true,
@@ -46,14 +52,12 @@ module.exports = {
                     data: data
                 });
 
-            }
-            else {
+            } else {
                 return res.status(401).json({
                     success: false,
                     message: 'Contraseña o correo incorrecto'
                 });
             }
-
         });
     },
 
@@ -76,15 +80,14 @@ module.exports = {
         });
     },
 
-    //Agregado para FireBase
     async registerWithImage(req, res) {
         const user = JSON.parse(req.body.user);
         const files = req.files;
-        if(files.length > 0){
+        if (files.length > 0) {
             const path = `image_${Date.now()}`;
             const url = await storage(files[0], path); 
             
-            if(url != undefined && url != null){
+            if (url != undefined && url != null) {
                 user.image = url;
             }
         }
@@ -102,8 +105,7 @@ module.exports = {
             const token = jwt.sign({ id: user.id, email: user.email }, keys.secretOrKey, {});
             user.session_token = `JWT ${token}`;
 
-            //Crea registro en la tabla user_has_roles:
-            Rol.create(user.id, 3, (err, data) => {     //3: Rol de cliente
+            Rol.create(user.id, 3, (err, data) => {     
                 console.log('usuario creado: ', user.id, ' rol creado: ', data);
                 if (err) {
                     return res.status(501).json({
@@ -122,15 +124,14 @@ module.exports = {
         });
     },
 
-
     async updateWithImage(req, res) {
         const user = JSON.parse(req.body.user);
         const files = req.files;
-        if(files.length > 0){
+        if (files.length > 0) {
             const path = `image_${Date.now()}`;
             const url = await storage(files[0], path); 
             
-            if(url != undefined && url != null){
+            if (url != undefined && url != null) {
                 user.image = url;
             }
         }
@@ -172,5 +173,4 @@ module.exports = {
             });
         });
     },
-
-}
+};
