@@ -1,5 +1,4 @@
 const express = require('express');
-const session = require('express-session'); // En la configuración de express-session, el campo secret se utiliza para firmar la cookie de sesión y protegerla contra manipulaciones. Debes proporcionar una cadena única y segura como valor para este campo.
 const passport = require('passport');
 const multer = require('multer'); //Agregado para FireBase
 
@@ -10,44 +9,36 @@ const logger = require('morgan');
 const cors = require('cors');
 
 /**
- * Importar rutas
- */
+* Importar rutas
+*/
 const usersRoutes = require('./routes/userRoutes');
 
 const port = process.env.PORT || 3000;
-
-app.use(logger('dev'));  // log requests to the console DEBUG
+app.use(logger('dev')); // log requests to the console DEBUG
 app.use(express.json()); // support json encoded bodies
-app.use(express.urlencoded({ 
-    extended: true 
+app.use(express.urlencoded({
+extended: true
+
 })); // support encoded bodies
+
 app.use(cors());
-
-// Configura express-session
-app.use(session({
-    secret: '3e1acd58068f2ba18699adc43e83808f5cb035aeca98386ec20cf1f304aba6b6',
-    resave: false,
-    saveUninitialized: false
-  }));
-
-// Configura Passport después de express-session
 app.use(passport.initialize());
 app.use(passport.session());
-
 require('./config/passport')(passport);
-
 app.disable('x-powered-by'); // disable the X-Powered-By header in responses
 
 app.set('port', port);
 
 //Agregado para FireBase
+
 const upload = multer({
-    storage: multer.memoryStorage()
+storage: multer.memoryStorage()
+
 });
 
 /**
- * Llamar a las rutas
- */
+* Llamar a las rutas
+*/
 usersRoutes(app, upload);
 
 
