@@ -1,29 +1,47 @@
 import React, { useState } from 'react';
 import { ApiDelivery } from '../../../Data/sources/remote/api/ApiDelivery';
 import { RegisterAuthUseCase } from '../../../Domain/useCases/auth/RegisterAuth';
+import * as ImagePicker from "expo-image-picker";
 
 const RegisterViewModel = () => {
 
     const [errorMessage, setErrorMessage] = useState('');
+
     const [values, setValues] = useState({
         name: '',
         lastname: '',
-        phone: '',
         email: '',
+        phone: '',
+        image: '',
         password: '',
-        confirmPassword: '',
+        confirmPassword: ''
     });
 
+    const [file, setFile] = useState<ImagePicker.ImagePickerAsset>();
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            quality: 1,
+        });
+        
+        if (!result.canceled) {
+            onChange('image', result.assets[0].uri);
+            setFile(result.assets[0]);
+        }
+    };
+
     const onChange = (property: string, value: any) => {
-        setValues({ ...values, [property]: value })
-    }
+        setValues({ ...values, [property]: value });
+    };
 
     const register = async () => {
         if (isValidForm()) {
             const response = await RegisterAuthUseCase(values);
             console.log('RESULT: ' + JSON.stringify(response));        
         }
-    }
+    };
 
     const isValidForm = (): boolean => {
         if (values.name === '') {
@@ -56,14 +74,15 @@ const RegisterViewModel = () => {
         }
 
         return true;
-    }
+    };
 
     return {
         ...values,
         onChange,
         register,
+        pickImage,
         errorMessage
-    }
-}
+    };
+};
 
 export default RegisterViewModel;
